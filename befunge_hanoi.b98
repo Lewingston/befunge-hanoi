@@ -1,0 +1,78 @@
+           v   GLOBALE VARIABLEN INITIALISIEREN                                 ============================[ ZEICHENFLAECHE ]===========================
+           v                                                                    |                                                                       |
+           >    55+00p  v --- [0,0] HOEHE DER TURME = 10                        |          ###                                                          |
+           v    p10+66  < --- [0,1] BASE LANE = 12                              |         #####                                                         |
+           >    55+02p  v --- [0,2] HOEHE TURM A = 10                           |        #######                                                        |
+           v p30+2+9*99 < --- [0,3] POS TURM A = 92                             |       #########                                                       |
+           >    012p    v --- [1,2] HOEHE TURM B = 0                            |      ###########                                                      |
+           v p31+*57*99 < --- [1,3] POS TURM B = 116                            |     #############                                                     |
+           >    022p    v --- [2,2] HOEHE TURM C = 0                            |    ###############                                                    |
+           v  p32*4*57  < --- [2,3] POS TURM C = 140                            |   #################                                                   |
+           v                                                                    |  ###################                                                  |
+           v                                                                    | #####################                                                 |
+           v                                                                    |=======================================================================|
+           v                                                                      [     STAPEL A      ]   [     STAPEL B      ]   [     STAPEL C      ]
+           v
+           v
+           v FUNKTION bewegen(10, a, b, c) aufrufen
+           > 00g 0 1 2 1 v
+v<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+v
+>>:v NULL POINTER ABFANGEN
+v-1_@
+v
+v        i [4,1] LOKALE VARIABLEN
+v        A [4,2]
+v        B [4,3]
+v        C [4,4]
+>>:v  FUNC[1] bewege(Zahl i, Stab a, Stab b, Stab c);
+v-1__ >>>            44p 43p 42p 41p v                ^### VARIABLEN VOM STACK IN SPEICHER SCHREIBEN
+v            v_v#                g14 <                ^### WENN (i > 0)
+v            v v                                      ^### DANN {
+v            >> >       41g 42g 43g 44g 2    v        ^###      VARIABLEN UND RUECKSPRUNGADRESSE AUF DEN STACK SCHREIBEN
+v                    v 1 g34 g44 g24 -1 g14  <        ^###      FUNKTION bewege(i-1, a, c, b) AUFRUFEN
+>>:v  JMP[2]         >                                ^###
+v-1__ >>>    v                                        ^###      SPRUNG PUNKT [2]
+v            >> >        44p 43p 42p 41p v            ^###      VARIABLEN VOM STACK IN DEN SPEICHER LEGEN
+v                    v 3 g44 g34 g24 g14 <            ^###      VARAIBLEN UND RUECKSPRUNGADRESSE AUF DEN STACK LEGEN
+v                    > 42g 44g 5                      ^###      FUNKTION verschieben(von, nach) AUFRUFEN
+>>:v  JMP[3]                                          ^###
+v-1__ >>>    v                                        ^###      SPRUNG PUNKT [3]
+v            >> >        44p 43p 42p 41p v            ^###      VARIABLEN VOM STACK IN DEN SPEICHER LEGEN
+v                    v 4 g44 g34 g24 g14 <            ^###      VARAIBLEN UND RUECKSPRUNGADRESSE AUF DEN STACK LEGEN
+v                    > 41g 1- 43g 42g 44g 1           ^###      FUNKTION bewegen(i-1, b, a, c) AUFRUFEN
+>>:v  JMP[4]                                          ^###
+v-1__ >>>    v                                        ^###      SPRUNG PUNKT [4]
+v            >> >        44p 43p 42p 41p >            ^###      VARIABLEN VOM STACK IN DEN SPEICHER LEGEN
+v              >>                                     ^### } ENDE DANN
+v                                                     ^###
+v        von    [5,1] LOKALE VARIABLEN                ^###
+v        nach   [5,2]                                 ^###
+v        X_VON  [5,3]                                 ^###
+v        Y_VON  [5,4]                                 ^###
+v        SIZE   [5,5]                                 ^###
+v        X_NACH [5,6]                                 ^###
+v        Y_NACH [5,7]                                 ^###
+>>:v  FUNC[5] verschieben(von, nach);                 ^###
+v-1__ >>>           52p 51p           v               ^### VARIABLEN VOM STACK IN DEN SPEICHER SCHREIBEN
+v             v      p45 - g2 g15 g10 <               ^### y_VON = BASE_LANE - [VON,2]
+v             >  51g 3g 53p           v               ^### X_VON = [VON,3]
+v             v   p75 -1 - g2 g25 g10 <               ^### Y_NACH = BASE_LANE - [NACH,2] - 1
+v             >  52g 3g 56p           v               ^### X_NACH = [NACH,3]
+v             v               p550    <               ^### SIZE = 0
+v          >  > 53g 55g + 54g  g      v               ^### GET ZEICHEN AT (X_VON+SIZE)/Y_VON
+v           v_v#             - "#"    <               ^### WENN ZEICHEN == #
+v                                                     ^### DANN {
+v             >  " " 53g 55g + 54g p  v               ^###    UEBERMALEN (X_VON+SIZE)/Y_VON
+v             v  p g45 - g55 g35 " "  <               ^###    UEBERMALEN (X_VON-SIZE)/Y_VON
+v             >  "#" 56g 55g + 57g p  v               ^###    UEBERMALEN (X_NACH+SIZE)/Y_NACH
+v             v   p g75 - g55 g65 "#" <               ^###    UEBERMALEN (X_NACH-SIZE)/Y_NACH
+v             > 55g 1+ 55p            v               ^###    SIZE += 1
+v          ^                          <               ^###    ZUERUECK SPRINGEN
+v           >                         v               ^### }ENDE DANN
+v             v p  2 g15 -1 g2 g15    <               ^### [VON,2]  -= 1
+v             >  52g 2g 1+ 52g 2  p   >               ^### [NACH,2] += 1
+v                                                     ^###
+v                                                     ^###
+v                                                     ^###
+v                                                     ^###
